@@ -1,1 +1,5 @@
 # UniversityRecommenderSystem
+
+This project is a proof of concept for a university recommendation system designed to help high school students find personalized university program recommendations based on their interests. It aims to address a key issue in the current education system, where students often feel pressured to attend university without a clear passion, leading to high dropout rates, mental health challenges, and disengagement from their studies. By providing targeted recommendations, this system helps students discover programs better aligned with their interests and career aspirations.
+
+Through this project, I am developing my AI integration and machine learning training skills, specifically using the OpenAI API and Scikit-Learn. Currently, I am testing machine learning models to determine the most effective approach for grouping programs based on their descriptions, which have been scraped from the UBC website. I also plan to incorporate additional data, such as required courses and future job prospects, to further enhance the quality of recommendations.
