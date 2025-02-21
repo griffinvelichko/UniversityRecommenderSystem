@@ -8,9 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 def scrape_ubc_programs(output_csv="ubc_programs2.csv"):
-    # Set up Selenium WebDriver with Chrome in normal mode
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")  # Uncomment if you want headless mode
+    # options.add_argument("--headless")
     
     print("Initializing WebDriver...")
     driver = webdriver.Chrome(
@@ -24,32 +23,26 @@ def scrape_ubc_programs(output_csv="ubc_programs2.csv"):
         driver.get(url)
 
         wait = WebDriverWait(driver, 20)
-        # Adjust the CSS selector based on your observation of the page
         dropdown_selector = "#ProgramLanding > div > div > ul > li > i"
         print("Waiting for dropdown elements to load...")
         dropdowns = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, dropdown_selector)))
         print(f"Found {len(dropdowns)} dropdown elements.")
 
-        # Open the CSV file for writing
         with open(output_csv, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(["Program Name", "Campus", "Duration (years), Description"])
 
-            # Iterate over each dropdown
             for index in range(len(dropdowns)):
-                # Because the DOM might change when you click dropdowns,
-                # refetch the list of dropdowns each time.
                 dropdowns = driver.find_elements(By.CSS_SELECTOR, dropdown_selector)
                 dropdown = dropdowns[index]
                 print(f"Clicking dropdown {index + 1}...")
                 driver.execute_script("arguments[0].click();", dropdown)
-                time.sleep(2)  # Wait for animation/expansion
+                time.sleep(2)
 
                 print("Scrolling to the bottom of the page...")
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(2)  # Wait for the page to load additional content
+                time.sleep(2)
 
-                # Now locate program cards within the current section
                 section_container_selector = f"#ProgramLanding > div > div > ul > li.topic-section-control.match.expanded.list-view > div > ul > li > ul > li"  
                 try:
                     programs = wait.until(
@@ -64,19 +57,17 @@ def scrape_ubc_programs(output_csv="ubc_programs2.csv"):
 
                             program_dropdown = prog.find_element(By.CSS_SELECTOR, ".program-section-state")
                             driver.execute_script("arguments[0].click();", program_dropdown)
-                            time.sleep(1)  # Wait for the description to load
+                            time.sleep(1)
 
                             description_selector = ".program-section-control.expanded > div.program-summary > div.program-summary-inner > p"
                             program_description = prog.find_element(By.CSS_SELECTOR, description_selector).text
 
-                            # Print the HTML of the program element
                             print(f"Program Name: {program_name}")
                             print(f"Program Campus: {program_campus}")
                             print(f"Program Duration: {program_duration} years")
                             print(f"Program Description: {program_description}")
                             print("\n")
 
-                            # Write the program details to the CSV file
                             writer.writerow([program_name, program_campus, program_duration, program_description])
                         except Exception as e:
                             print(f"Error extracting program details: {e}")
